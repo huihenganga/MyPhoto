@@ -275,7 +275,7 @@ public class PubUserInfoController extends BaseAppController {
 	@ResponseBody
 	public JSONObject publishProduct(HttpServletRequest request,
 			HttpServletResponse response, String title, String coveUrl,
-			String description, String userId) {
+			String description,String message,Integer displayId, String userId) {
 		JsonResult json = new JsonResult(DescribableEnum.SUCCESS);
 		User user = userService.getUserById(userId);
 		Product product = new Product();
@@ -284,6 +284,8 @@ public class PubUserInfoController extends BaseAppController {
 		product.setShareId(user.getId());
 		product.setPublishTime(new Date());
 		product.setDescription(description);
+		product.setMessage(message);
+		product.setDisplayId(displayId);
 		productService.saveOrUpdateProduct(product);
 		json.addData("productId", product.getId());
 		return JSONObject.fromObject(json, PubUtil.getJsonConfig());
