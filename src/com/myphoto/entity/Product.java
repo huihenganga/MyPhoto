@@ -18,6 +18,8 @@ public class Product {
 	private String shareId; 		//分享人
 	private Date publishTime;		//发布时间
 	private String description; 	//具体描述
+	private String message; 		//留言
+	private Integer displayId; 		//画展id
 	
 	public Product() {
 		super();
@@ -60,5 +62,17 @@ public class Product {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public Integer getDisplayId() {
+		return displayId;
+	}
+	public void setDisplayId(Integer displayId) {
+		this.displayId = displayId;
 	}
 }
