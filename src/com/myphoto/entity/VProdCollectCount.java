@@ -8,11 +8,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//作品
+//一周内点赞作品
 @Entity
-@Table(name = "PRODUCT")
-public class Product {
-	private Integer id;         
+@Table(name = "VPRODCOLLECTCOUNT")
+public class VProdCollectCount {
+	private Integer collectionId;         
 	private String title;			//标题
 	private String coveUrl;			//封面地址
 	private String shareId; 		//分享人
@@ -20,22 +20,32 @@ public class Product {
 	private String description; 	//具体描述
 	private String message; 		//留言
 	private String background; 		//背景墙颜色
+	private Integer count;			//一周内的点赞数量
 	
-	public Product() {
+	public VProdCollectCount() {
 		super();
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public Integer getId() {
-		return id;
+	public Integer getCollectionId() {
+		return collectionId;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+	
+	public void setCollectionId(Integer collectionId) {
+		this.collectionId = collectionId;
+	}
+	
+	public Integer getCount() {
+		return count;
+	}
+	
+	public void setCount(Integer count) {
+		this.count = count;
 	}
 	public String getTitle() {
 		return title;
 	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}

@@ -17,7 +17,8 @@ public class JsonResult implements Serializable
 	private String msg; // 接口调用结果描述信息
 	private String ret; // 接口调用结果描述编码
 	private PageObject page; // 接口返回的分页对象
-	private Map<String, Object> data; // 接口返回的数据
+	private Map<String, Object> data; // 接口返回的数据z
+	private String jo; 
 	
 	public JsonResult(String ret,String msg)
 	{
@@ -93,5 +94,13 @@ public class JsonResult implements Serializable
 			data = Maps.newHashMap();
 		}
 		this.data.put(valueName, value);
+	}
+
+	public String getJo() {
+		return jo;
+	}
+
+	public void setJo(String jo) {
+		this.jo = jo;
 	}
 }

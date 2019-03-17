@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ import com.myphoto.service.PriUserService;
 import com.myphoto.util.LoginUser;
 import com.myphoto.util.MD5;
 import com.myphoto.util.SessionContainer;
+import com.tencent.cloud.CosStsClient;
 
 
 @Controller
@@ -239,5 +242,55 @@ public class MainController extends BaseManageController {
 		ServletOutputStream sos = response.getOutputStream();
 		ImageIO.write(buffImg, "jpeg", sos);
 		sos.close();
+	}
+	
+	public static void main(String[] args) {
+		/*String s = getFriendTime(System.currentTimeMillis()-60 * 60*1000);
+		System.out.println(s);*/
+		
+//		for(int i=0;i<10;i++){
+//			String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+//			System.out.println(uuid);
+//		}
+		
+
+        TreeMap<String, Object> config = new TreeMap<String, Object>();
+
+        try {
+            // 固定密钥
+            config.put("SecretId", "AKID2xiI9wAyDk5PYVqrGj4DByZ0GLEzZxAB");
+            // 固定密钥
+            config.put("SecretKey", "74tW2NWTFpDQTK3bxc9XkpmY9YlmbEm9");
+
+            // 临时密钥有效时长，单位是秒
+            config.put("durationSeconds", 1800);
+
+            // 换成您的 bucket
+            config.put("bucket", "huajia-1255442634");
+            // 换成 bucket 所在地区
+            config.put("region", "ap-guangzhou");
+
+            // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的目录，例子：* 或者 a/* 或者 a.jpg
+            config.put("allowPrefix", "*");
+
+            // 密钥的权限列表。简单上传和分片需要以下的权限，其他权限列表请看 https://cloud.tencent.com/document/product/436/31923
+            String[] allowActions = new String[] {
+                    // 简单上传
+                    "name/cos:PutObject",
+                    // 分片上传
+                    "name/cos:InitiateMultipartUpload",
+                    "name/cos:ListMultipartUploads",
+                    "name/cos:ListParts",
+                    "name/cos:UploadPart",
+                    "name/cos:CompleteMultipartUpload"
+            };
+            config.put("allowActions", allowActions);
+
+            JSONObject credential = CosStsClient.getCredential(config);
+            System.out.println(credential);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("no valid secret !");
+        }
+		
 	}
 }

@@ -28,6 +28,6 @@ public class MD5 {
 	 
 	public static void main(String args[]) {
 		MD5 md5 = getInstance(); 
-		System.out.println("MD5(\"abcefg\"):" + md5.getMD5("150127007"));
+		System.out.println("MD5(\"abcefg\"):" + md5.getMD5("123456"));
 	}
 }

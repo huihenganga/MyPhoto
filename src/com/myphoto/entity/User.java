@@ -16,9 +16,9 @@ import javax.persistence.Transient;
 public class User {
 	private String id;   			//小程序的id（用uuid生成）
 	private String openId;			//微信用户唯一标识
+	private String sessionKey;		//微信返回的一个值
 	private String nickName;		// 用户昵称
 	private String headImage;   	// 头像地址
-	private String token;		    
 	private Date createDate=new Date();
 	
 	public User() {
@@ -50,16 +50,18 @@ public class User {
 	public void setHeadImage(String headImage) {
 		this.headImage = headImage;
 	}
-	public String getToken() {
-		return token;
-	}
-	public void setToken(String token) {
-		this.token = token;
-	}
 	public Date getCreateDate() {
 		return createDate;
 	}
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+
+	public String getSessionKey() {
+		return sessionKey;
+	}
+
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
 	}
 }

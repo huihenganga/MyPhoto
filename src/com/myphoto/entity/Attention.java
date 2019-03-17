@@ -13,8 +13,8 @@ import javax.persistence.Table;
 @Table(name = "ATTENTION")
 public class Attention {
 	private Integer id;
-	private String attentionBy;	//关注人
-	private String attentionTo;	//被关注人
+	private String attentionBy;		//关注人
+	private String attentionTo;		//被关注人
 	private Date attentionTime;		//关注时间
 	private Integer status;			//关注状态：0取消关注；1关注
 
