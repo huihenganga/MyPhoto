@@ -11,11 +11,12 @@ import javax.persistence.Table;
 @Table(name = "COMMENT")
 public class Comment {
 	private Integer id;         
-	private Integer rootId ;			//作品Id
+	private Integer productId ;			//作品Id
 	private Integer parentReplyId;		//父评论的id
-	private Integer parentRelyer;		//父评论人：父评论人的用户信息{User：id，headImage,nickName}
+	private String parentRelyer;		//父评论人：父评论人的用户信息{User：id，headImage,nickName}
+	private String parentReplyConetent;	//父评论内容
 	private String content;				//评论的内容
-	private Integer replyer;			//评论人：评论人的用户信息{User：id，headImage,nickName}
+	private String replyer;				//评论人：评论人的用户信息{User：id，headImage,nickName}
 	private Long commentTime;			//评论的时间
 	
 	@Id
@@ -26,11 +27,11 @@ public class Comment {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getRootId() {
-		return rootId;
+	public Integer getProductId() {
+		return productId;
 	}
-	public void setRootId(Integer rootId) {
-		this.rootId = rootId;
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
 	public Integer getParentReplyId() {
 		return parentReplyId;
@@ -38,11 +39,17 @@ public class Comment {
 	public void setParentReplyId(Integer parentReplyId) {
 		this.parentReplyId = parentReplyId;
 	}
-	public Integer getParentRelyer() {
+	public String getParentRelyer() {
 		return parentRelyer;
 	}
-	public void setParentRelyer(Integer parentRelyer) {
+	public void setParentRelyer(String parentRelyer) {
 		this.parentRelyer = parentRelyer;
+	}
+	public String getParentReplyConetent() {
+		return parentReplyConetent;
+	}
+	public void setParentReplyConetent(String parentReplyConetent) {
+		this.parentReplyConetent = parentReplyConetent;
 	}
 	public String getContent() {
 		return content;
@@ -50,10 +57,10 @@ public class Comment {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public Integer getReplyer() {
+	public String getReplyer() {
 		return replyer;
 	}
-	public void setReplyer(Integer replyer) {
+	public void setReplyer(String replyer) {
 		this.replyer = replyer;
 	}
 	public Long getCommentTime() {

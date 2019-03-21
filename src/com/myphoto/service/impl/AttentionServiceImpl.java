@@ -16,8 +16,11 @@ import com.myphoto.dao.ProductArtShowDao;
 import com.myphoto.dao.ProductCountDao;
 import com.myphoto.dao.ProductDao;
 import com.myphoto.dao.RUserArtShowDao;
+import com.myphoto.dao.ShareBeLookLogDao;
+import com.myphoto.dao.ShareLogDao;
 import com.myphoto.dao.UserDao;
 import com.myphoto.dao.VProdCollectCountDao;
+import com.myphoto.dao.VProdCollectDao;
 import com.myphoto.entity.ArtShow;
 import com.myphoto.entity.Attention;
 import com.myphoto.entity.Collection;
@@ -25,7 +28,9 @@ import com.myphoto.entity.Product;
 import com.myphoto.entity.ProductArtShow;
 import com.myphoto.entity.ProductCount;
 import com.myphoto.entity.RUserArtShow;
+import com.myphoto.entity.ShareLog;
 import com.myphoto.entity.User;
+import com.myphoto.entity.VProdCollect;
 import com.myphoto.entity.VProdCollectCount;
 import com.myphoto.entity.base.PageObject;
 import com.myphoto.service.AttentionService;
@@ -54,6 +59,12 @@ public class AttentionServiceImpl implements AttentionService {
 	private ProductArtShowDao productArtShowDao;
 	@Autowired
 	private VProdCollectCountDao vProdCollectCountDao;
+	@Autowired
+	private ShareBeLookLogDao shareBeLookLogDao;
+	@Autowired
+	private ShareLogDao shareLogDao;
+	@Autowired
+	private VProdCollectDao vProdCollectDao;
 
 	@Override
 	public Integer getAttentionCountByUserId(String userId) {
@@ -277,8 +288,10 @@ public class AttentionServiceImpl implements AttentionService {
 					map.put("background", list3.get(i).getBackground());
 					if (null != pc) {
 						map.put("beCollect", pc.getCollectCount());
+						map.put("pageview", pc.getPageView());
 					} else {
 						map.put("beCollect", 0);
+						map.put("pageview", 0);
 					}
 					if (null != u) {
 						map.put("nickName", u.getNickName());
@@ -364,6 +377,10 @@ public class AttentionServiceImpl implements AttentionService {
 						" from Collection "
 								+ "where collectBy=? and collectionId=?",
 						userId, list.get(i).getId());
+				Long collectCount = collectionDao
+						.findCountBySql(
+								"select count(*) from Collection where collectionId=? ",
+								list.get(i).getId());
 				ProductCount pc = productCountDao.findFirstByHql(
 						" from ProductCount " + "where productId=?", list
 								.get(i).getId());
@@ -376,8 +393,10 @@ public class AttentionServiceImpl implements AttentionService {
 				map.put("background", list.get(i).getBackground());
 				if (null != pc) {
 					map.put("beCollect", pc.getCollectCount());
+					map.put("pageview", pc.getPageView());
 				} else {
 					map.put("beCollect", 0);
+					map.put("pageview",0);
 				}
 				if (null != u) {
 					map.put("nickName", u.getNickName());
@@ -455,6 +474,8 @@ public class AttentionServiceImpl implements AttentionService {
 							" from Collection "
 									+ "where collectBy=? and collectionId=?",
 							userId, list3.get(i).getId());
+					ProductCount prodC = productCountDao.findFirstByHql(
+							" from ProductCount " + "where productId=?", list3.get(i).getId());
 					map.put("id", list3.get(i).getId());
 					map.put("title", list3.get(i).getTitle());
 					map.put("coveUrl", list3.get(i).getCoveUrl());
@@ -466,6 +487,13 @@ public class AttentionServiceImpl implements AttentionService {
 					if (null != pc) {
 						map.put("nickName", pc.getNickName());
 						map.put("avater", pc.getHeadImage());
+					}
+					if (null != prodC) {
+						map.put("beCollect", prodC.getCollectCount());
+						map.put("pageview", prodC.getPageView());
+					} else {
+						map.put("beCollect", 0);
+						map.put("pageview", 0);
 					}
 					if (null != attention && attention.getStatus() == 1) {
 						map.put("attentionStatus", 1);
@@ -608,8 +636,10 @@ public class AttentionServiceImpl implements AttentionService {
 				// map.put("background", list.get(i).getBackground());
 				if (null != pc) {
 					map.put("beCollect", pc.getCollectCount());
+					map.put("pageview", pc.getPageView());
 				} else {
 					map.put("beCollect", 0);
+					map.put("pageview", 0);
 				}
 				if (null != collection && collection.getStatus() == 1) {
 					map.put("collectionStatus", 1);
@@ -637,7 +667,6 @@ public class AttentionServiceImpl implements AttentionService {
 		StringBuffer hql = new StringBuffer(
 				"from ArtShow order by createTime desc");
 		PageObject pg = artShowDao.findForPageByHql(pageObject, hql.toString());
-
 		List<ArtShow> dateCount = artShowDao.findByHql(hql.toString());
 		List<ArtShow> list = pageObject.getData();
 		List list2 = new ArrayList();
@@ -663,7 +692,7 @@ public class AttentionServiceImpl implements AttentionService {
 				map.put("title", list.get(i).getTitle());
 				map.put("description", list.get(i).getDescription());
 				map.put("ImgUrl", list.get(i).getImgUrl());
-				map.put("createTime", list.get(i).getCreateTime());
+				map.put("createTime", list.get(i).getCreateTime().getTime());
 				list2.add(map);
 			}
 		}
@@ -676,10 +705,234 @@ public class AttentionServiceImpl implements AttentionService {
 	@Override
 	public List<VProdCollectCount> getTop3Product() {
 		List<VProdCollectCount> listtem = vProdCollectCountDao
-				.findByHql("from VProdCollectCount p where order by count desc");
+				.findByHql("from VProdCollectCount ");
 		if (listtem.size() > 4) {
 			listtem = listtem.subList(0, 4);
 		}
 		return listtem;
 	}
+
+	@Override
+	public PageObject myShareProductList(PageObject pageObject, String userId) {
+		StringBuffer hql = new StringBuffer("from ShareLog where shareUserId='"
+				+ userId);
+		hql.append("' order by shareTime desc");
+		PageObject pg = productDao.findForPageByHql(pageObject, hql.toString());
+		List<ShareLog> dateCount = shareLogDao.findByHql(hql.toString());
+		List<ShareLog> list = pageObject.getData();
+		List list2 = new ArrayList();
+		if (list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				
+				Product pd = productDao.findFirstByHql(
+						" from Product "
+								+ "where id=? ",list.get(i).getId());
+				Long count = shareBeLookLogDao.findCountBySql(
+						"select count(*) from ShareBeLookLog where prodcutId=?", list.get(i).getId());
+				if (null != pd) {
+					map.put("id", list.get(i).getId());
+					map.put("title", pd.getTitle());
+					map.put("coveUrl", pd.getCoveUrl());
+					map.put("publishTime",pd.getPublishTime().getTime());
+					map.put("shareId", pd.getShareId());
+					map.put("description", pd.getDescription());
+					map.put("message", pd.getMessage());
+					map.put("background", pd.getBackground());
+				}
+				map.put("beLookCount", count);
+				
+				map.put("price", 5);// TODO 价格待定
+				
+				list2.add(map);
+			}
+		}
+		pageObject.setData(list2);
+		pageObject.setDataCount(dateCount.size());
+		return pageObject;
+	}
+
+	@Override
+	public PageObject getArtShowProductListByTime(PageObject pageObject,
+			String userId, Integer artShowId) {
+		List<ProductArtShow> list3 = productArtShowDao.findByHql(
+				" from ProductArtShow v where 1=1 and v.displayId=?", artShowId);
+		String str = "";
+		if (list3.size() > 0) {
+			str += "(";
+			for (int i = 0; i < list3.size() - 1; i++) {
+				if (null != (list3.get(i).getProductId())
+						&& 0 != (list3.get(i).getProductId())) {
+					str = str + list3.get(i).getProductId() + ",";
+				}
+			}
+			if (null != list3.get(list3.size() - 1).getProductId()
+					&& 0 != list3.get(list3.size() - 1).getProductId()) {
+				str = str + list3.get(list3.size() - 1).getProductId();
+			}
+			str = str.endsWith(",") ? str.substring(0, str.length() - 1) : str;
+			str += ")";
+		}
+		if (!str.equals("()") && !str.equals("")) {
+			StringBuffer hql = new StringBuffer(
+					"from Product where id in "+str+" order by publishTime desc");
+			PageObject pg = productDao.findForPageByHql(pageObject, hql.toString());
+			List<Product> dateCount = productDao.findByHql(hql.toString());
+			List<Product> list = pageObject.getData();
+			List list2 = new ArrayList();
+			if (list.size() > 0) {
+				for (int i = 0; i < list.size(); i++) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					User u = userDao.findFirstByHql("from User where id=?", list
+							.get(i).getShareId());
+					Attention attention = attentionDao.findFirstByHql(
+							" from Attention "
+									+ "where attentionBy=? and attentionTo=?",
+							userId, list.get(i).getShareId());
+					Collection collection = collectionDao.findFirstByHql(
+							" from Collection "
+									+ "where collectBy=? and collectionId=?",
+							userId, list.get(i).getId());
+					Long collectCount = collectionDao
+							.findCountBySql(
+									"select count(*) from Collection where collectionId=? ",
+									list.get(i).getId());
+					ProductCount pc = productCountDao.findFirstByHql(
+							" from ProductCount " + "where productId=?", list
+									.get(i).getId());
+					map.put("id", list.get(i).getId());
+					map.put("title", list.get(i).getTitle());
+					map.put("coverUrl", list.get(i).getCoveUrl());
+					map.put("publishTime", list.get(i).getPublishTime().getTime());
+					map.put("description", list.get(i).getDescription());
+					map.put("message", list.get(i).getMessage());
+					map.put("background", list.get(i).getBackground());
+					if (null != pc) {
+						map.put("beCollect", pc.getCollectCount());
+						map.put("pageview", pc.getPageView());
+					} else {
+						map.put("beCollect", 0);
+						map.put("pageview",0);
+					}
+					if (null != u) {
+						map.put("nickName", u.getNickName());
+						map.put("avater", u.getHeadImage());
+					}
+					if (null != attention && attention.getStatus() == 1) {
+						map.put("attentionStatus", 1);
+					} else {
+						map.put("attentionStatus", 0);
+					}
+					if (null != collection && collection.getStatus() == 1) {
+						map.put("collectionStatus", 1);
+					} else {
+						map.put("collectionStatus", 0);
+					}
+					list2.add(map);
+				}
+			}
+			pageObject.setData(list2);
+			pageObject.setDataCount(dateCount.size());
+			return pageObject;
+		}else{
+			pageObject = new PageObject();
+			List l = new ArrayList();
+			pageObject.setData(l);
+			pageObject.setDataCount(l.size());
+			return pageObject;
+		}	
+	}
+
+	@Override
+	public PageObject getHotProductListOfArtShow(PageObject pageObject,
+			String userId,Integer artShowId) {
+		List<ProductArtShow> list3 = productArtShowDao.findByHql(
+				" from ProductArtShow v where 1=1 and v.displayId=?", artShowId);
+		String str = "";
+		if (list3.size() > 0) {
+			str += "(";
+			for (int i = 0; i < list3.size() - 1; i++) {
+				if (null != (list3.get(i).getProductId())
+						&& 0 != (list3.get(i).getProductId())) {
+					str = str + list3.get(i).getProductId() + ",";
+				}
+			}
+			if (null != list3.get(list3.size() - 1).getProductId()
+					&& 0 != list3.get(list3.size() - 1).getProductId()) {
+				str = str + list3.get(list3.size() - 1).getProductId();
+			}
+			str = str.endsWith(",") ? str.substring(0, str.length() - 1) : str;
+			str += ")";
+		}
+		if (!str.equals("()") && !str.equals("")) {
+			StringBuffer hql = new StringBuffer(
+					"from VProdCollect where collectionId in "+str+" order by publishTime desc");
+			PageObject pg = vProdCollectDao.findForPageByHql(pageObject, hql.toString());
+			List<VProdCollect> dateCount = vProdCollectDao.findByHql(hql.toString());
+			List<VProdCollect> list = pageObject.getData();
+			List list2 = new ArrayList();
+			if (list.size() > 0) {
+				for (int i = 0; i < list.size(); i++) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					User u = userDao.findFirstByHql("from User where id=?", list
+							.get(i).getShareId());
+					Attention attention = attentionDao.findFirstByHql(
+							" from Attention "
+									+ "where attentionBy=? and attentionTo=?",
+							userId, list.get(i).getShareId());
+					Collection collection = collectionDao.findFirstByHql(
+							" from Collection "
+									+ "where collectBy=? and collectionId=?",
+							userId, list.get(i).getCollectionId());
+					Long collectCount = collectionDao
+							.findCountBySql(
+									"select count(*) from Collection where collectionId=? ",
+									list.get(i).getCollectionId());
+					ProductCount pc = productCountDao.findFirstByHql(
+							" from ProductCount " + "where productId=?", list
+									.get(i).getCollectionId());
+					map.put("id", list.get(i).getCollectionId());
+					map.put("title", list.get(i).getTitle());
+					map.put("coverUrl", list.get(i).getCoveUrl());
+					map.put("publishTime", list.get(i).getPublishTime().getTime());
+					map.put("description", list.get(i).getDescription());
+					map.put("message", list.get(i).getMessage());
+					map.put("background", list.get(i).getBackground());
+					if (null != pc) {
+						map.put("beCollect", pc.getCollectCount());
+						map.put("pageview", pc.getPageView());
+					} else {
+						map.put("beCollect", 0);
+						map.put("pageview",0);
+					}
+					if (null != u) {
+						map.put("nickName", u.getNickName());
+						map.put("avater", u.getHeadImage());
+					}
+					if (null != attention && attention.getStatus() == 1) {
+						map.put("attentionStatus", 1);
+					} else {
+						map.put("attentionStatus", 0);
+					}
+					if (null != collection && collection.getStatus() == 1) {
+						map.put("collectionStatus", 1);
+					} else {
+						map.put("collectionStatus", 0);
+					}
+					list2.add(map);
+				}
+			}
+			pageObject.setData(list2);
+			pageObject.setDataCount(dateCount.size());
+			return pageObject;
+		}else{
+			pageObject = new PageObject();
+			List l = new ArrayList();
+			pageObject.setData(l);
+			pageObject.setDataCount(l.size());
+			return pageObject;
+		}	
+	}
+	
+	
 }

@@ -8,19 +8,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//画展
+//热门画展
 @Entity
-@Table(name = "ARTSHOW")
-public class ArtShow {
+@Table(name = "ARTSHOWHOTVO")
+public class ArtShowHotVO {
 	private Integer id;         
 	private String title;		//画展标题    
 	private String description;	//描述
 	private String ImgUrl;		//url	
 	private Date createTime;	//创建时间
-	private Integer isHot=0;         //是否热门:0否；1是
-	private Integer isRecommend=0;   //是否推荐:0否；1是
+	private Integer productCount;//参展作品数量
 	
-	public ArtShow() {
+	public ArtShowHotVO() {
 		super();
 	}
 	
@@ -66,20 +65,11 @@ public class ArtShow {
 		ImgUrl = imgUrl;
 	}
 
-	public Integer getIsHot() {
-		return isHot;
+	public Integer getProductCount() {
+		return productCount;
 	}
 
-	public void setIsHot(Integer isHot) {
-		this.isHot = isHot;
+	public void setProductCount(Integer productCount) {
+		this.productCount = productCount;
 	}
-
-	public Integer getIsRecommend() {
-		return isRecommend;
-	}
-
-	public void setIsRecommend(Integer isRecommend) {
-		this.isRecommend = isRecommend;
-	}
-	
 }

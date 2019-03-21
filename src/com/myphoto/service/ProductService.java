@@ -4,9 +4,13 @@ import java.util.List;
 
 import com.myphoto.entity.ArtShow;
 import com.myphoto.entity.ArtShowCount;
+import com.myphoto.entity.ArtShowHotVO;
+import com.myphoto.entity.ArtShowRecomentVO;
 import com.myphoto.entity.Product;
 import com.myphoto.entity.ProductArtShow;
 import com.myphoto.entity.ProductCount;
+import com.myphoto.entity.ShareBeLookLog;
+import com.myphoto.entity.ShareLog;
 import com.myphoto.entity.base.PageObject;
 
 public interface ProductService {
@@ -74,4 +78,71 @@ public interface ProductService {
 	 * void
 	 */
 	public void saveOrUpdaArtShowCount(ArtShowCount pc);
+
+	/**
+	 * @author wcj
+	 * 2019-3-17下午6:59:29
+	 * @param pageObject
+	 * @param str
+	 * @return
+	 * PageObject
+	 */
+	public PageObject searchArtShowByName(PageObject pageObject, String str);
+
+	/**
+	 * @author wcj
+	 * 2019-3-17下午7:46:39
+	 * @param shareUserId
+	 * @param watchUserId
+	 * @param productId
+	 * @return
+	 * ShareLog
+	 */
+	public ShareLog getShareLogByShareId(String shareUserId,
+			 Integer productId);
+
+	/**
+	 * @author wcj
+	 * 2019-3-17下午7:52:26
+	 * @param t
+	 * void
+	 */
+	public void saveOrUpdateShareLog(ShareLog t);
+
+	/**
+	 * @author wcj
+	 * 2019-3-17下午7:59:22
+	 * @param shareUserId
+	 * @param watchUserId
+	 * @param productId
+	 * @return
+	 * ShareBeLookLog
+	 */
+	public ShareBeLookLog getShareBeLookLog(String shareUserId,
+			String watchUserId, Integer productId);
+
+	/**
+	 * @author wcj
+	 * 2019-3-17下午7:59:28
+	 * @param t
+	 * void
+	 */
+	public void saveOrUpdateShareBeLookLog(ShareBeLookLog t);
+
+	/**
+	 * @author wcj
+	 * 2019-3-21下午11:00:00
+	 * @param artShowId
+	 * @return
+	 * List<ArtShowRecomentVO>
+	 */
+	public List<ArtShowRecomentVO> getRecomentArtShow();
+
+	/**
+	 * @author wcj
+	 * 2019-3-21下午11:09:01
+	 * @return
+	 * List<ArtShowHotVO>
+	 */
+	public List<ArtShowHotVO> getHotArtShow();
 }

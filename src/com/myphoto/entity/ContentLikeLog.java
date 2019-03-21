@@ -1,5 +1,7 @@
 package com.myphoto.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,20 +12,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "contentlikelog")
 public class ContentLikeLog {
-	private Integer contentId;         
+	private Integer id;         
 	private Integer rootId;		//作品ID
-	private Integer liker; 		//点赞人
-	private Long liketime;		//点赞时间
+	private String liker; 		//点赞人
+	private Date liketime;		//点赞时间
 	private Integer status;		//点赞状态：0取消关注；1关注
-	private Integer beLiker; 	//被点赞人
+	private String beLiker; 	//被点赞人
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public Integer getContentId() {
-		return contentId;
+	public Integer getId() {
+		return id;
 	}
-	public void setContentId(Integer contentId) {
-		this.contentId = contentId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	public Integer getRootId() {
 		return rootId;
@@ -31,16 +33,16 @@ public class ContentLikeLog {
 	public void setRootId(Integer rootId) {
 		this.rootId = rootId;
 	}
-	public Integer getLiker() {
+	public String getLiker() {
 		return liker;
 	}
-	public void setLiker(Integer liker) {
+	public void setLiker(String liker) {
 		this.liker = liker;
 	}
-	public Long getLiketime() {
+	public Date getLiketime() {
 		return liketime;
 	}
-	public void setLiketime(Long liketime) {
+	public void setLiketime(Date liketime) {
 		this.liketime = liketime;
 	}
 	public Integer getStatus() {
@@ -49,10 +51,10 @@ public class ContentLikeLog {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	public Integer getBeLiker() {
+	public String getBeLiker() {
 		return beLiker;
 	}
-	public void setBeLiker(Integer beLiker) {
+	public void setBeLiker(String beLiker) {
 		this.beLiker = beLiker;
 	}
 }

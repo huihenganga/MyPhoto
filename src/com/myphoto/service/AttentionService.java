@@ -5,6 +5,7 @@ import java.util.List;
 import com.myphoto.entity.Attention;
 import com.myphoto.entity.Collection;
 import com.myphoto.entity.RUserArtShow;
+import com.myphoto.entity.VProdCollectCount;
 import com.myphoto.entity.base.PageObject;
 
 
@@ -117,6 +118,42 @@ public interface AttentionService {
 	 * @return
 	 * PageObject
 	 */
-	public PageObject getArtShowList(PageObject pageObject);
+	public PageObject getArtShowList(PageObject pageObject,String userId);
+	/**
+	 * @author wcj
+	 * 2019-3-17下午1:57:24
+	 * @return
+	 * List<Product>
+	 */
+	public List<VProdCollectCount> getTop3Product();
+	/**
+	 * @author wcj
+	 * 2019-3-17下午8:16:11
+	 * @param pageObject
+	 * @param userId
+	 * @return
+	 * PageObject
+	 */
+	public PageObject myShareProductList(PageObject pageObject, String userId);
+	/**
+	 * @author wcj
+	 * 2019-3-21下午7:26:19
+	 * @param pageObject
+	 * @param userId
+	 * @param artShowId
+	 * @return
+	 * PageObject
+	 */
+	public PageObject getArtShowProductListByTime(PageObject pageObject,
+			String userId, Integer artShowId);
+	/**
+	 * @author wcj
+	 * 2019-3-21下午9:44:35
+	 * @param pageObject
+	 * @return
+	 * PageObject
+	 */
+	public PageObject getHotProductListOfArtShow(PageObject pageObject,
+			String userId,Integer artShowId);
 
 }
